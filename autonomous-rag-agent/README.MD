@@ -1,5 +1,7 @@
 # Local Agentic RAG System
 
+![Demo](demo.gif)
+
 > **Full-Stack Autonomous AI Agent** built with **LangGraph**, **LangChain**, **Ollama (Qwen 2.5 7B)**, and **Flask**.
 
 ---
