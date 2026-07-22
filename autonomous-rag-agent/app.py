@@ -16,6 +16,13 @@ from langgraph.graph.message import add_messages
 app = Flask(__name__)
 
 
+TEMPERATURE = 0.1
+LOCAL_MODEL = "qwen2.5:7b"
+HELPFUL_PROMPT = "You are a helpful assistant. "
+SEARCH_PORTFOLIO_PROMPT = """You have access to a local portfolio.pdf document located in the data/ directory.
+                          Use this document to answer questions about Thiago Lucio's skills, experience, and projects."""
+
+
 @tool
 def search_portfolio(query: str) -> str:
     """Searches the local portfolio.pdf document located in the data/ directory for information regarding Thiago Lucio.
@@ -38,7 +45,7 @@ def search_portfolio(query: str) -> str:
 tools = [search_portfolio]
 tools_by_name = {tool.name: tool for tool in tools}
 
-llm = ChatOllama(model="qwen2.5:7b", temperature=0.2)
+llm = ChatOllama(model=LOCAL_MODEL, temperature=TEMPERATURE)
 llm_with_tools = llm.bind_tools(tools)
 
 
@@ -109,10 +116,7 @@ def chat():
     if not user_message:
         return jsonify({"error": "Empty message"}), 400
 
-    system_prompt = (
-        "You are a helpful assistant. "
-        "Use 'search_portfolio' whenever you are asked about Thiago Lucio, his portfolio, resume, or experiences."
-    )
+    system_prompt = f"{HELPFUL_PROMPT}{SEARCH_PORTFOLIO_PROMPT}"
 
     initial_messages = [
         SystemMessage(content=system_prompt),
