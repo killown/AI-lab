@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LangChain Agent Interface</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        background: #f4f7f6;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+      }
+      .chat-container {
+        width: 100%;
+        max-width: 600px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        height: 85vh;
+      }
+      .chat-header {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        text-align: center;
+      }
+      .chat-box {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .message {
+        padding: 10px 14px;
+        border-radius: 8px;
+        max-width: 80%;
+        word-wrap: break-word;
+      }
+      .user-message {
+        background: #007bff;
+        color: white;
+        align-self: flex-end;
+      }
+      .bot-message {
+        background: #e9ecef;
+        color: #333;
+        align-self: flex-start;
+        white-space: pre-wrap;
+      }
+      .input-area {
+        display: flex;
+        padding: 15px;
+        border-top: 1px solid #ddd;
+        gap: 10px;
+      }
+      input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        outline: none;
+      }
+      button {
+        padding: 12px 20px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #218838;
+      }
+      .loading {
+        font-style: italic;
+        color: #777;
+        align-self: flex-start;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">
+        <h2>Local AI Agent (Qwen 2.5 + LangChain)</h2>
+      </div>
+      <div class="chat-box" id="chatBox">
+        <div class="message bot-message">
+          Hello! How can I assist you today?
+        </div>
+      </div>
+      <div class="input-area">
+        <input
+          type="text"
+          id="userInput"
+          placeholder="Type a message or a calculation..."
+          onkeydown="if(event.key==='Enter') sendMessage()"
+        />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script>
+      async function sendMessage() {
+        const input = document.getElementById("userInput");
+        const chatBox = document.getElementById("chatBox");
+        const text = input.value.trim();
+
+        if (!text) return;
+
+        chatBox.innerHTML += `<div class="message user-message">${text}</div>`;
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "message bot-message loading";
+        loadingDiv.innerText = "Processing request...";
+        chatBox.appendChild(loadingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text }),
+          });
+
+          const data = await res.json();
+          chatBox.removeChild(loadingDiv);
+
+          if (data.response) {
+            chatBox.innerHTML += `<div class="message bot-message">${data.response}</div>`;
+          } else {
+            chatBox.innerHTML += `<div class="message bot-message">Error retrieving response.</div>`;
+          }
+        } catch (err) {
+          chatBox.removeChild(loadingDiv);
+          chatBox.innerHTML += `<div class="message bot-message">Request execution failed.</div>`;
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
