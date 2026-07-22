@@ -1,6 +1,6 @@
 # Multimodal Image Inspector
 
-![Multimodal Image Inspector Demo](multimodal-image-inspector/demo.gif)
+![Multimodal Image Inspector Demo](demo.gif)
 
 A lightweight, local web interface and Flask API powered by LangChain and Qwen 2.5 VL (qwen2.5vl:7b) via Ollama. It allows users to upload local image files and analyze them using visual-language queries.
 
