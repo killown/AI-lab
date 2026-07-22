@@ -26,7 +26,7 @@
                     │                                         │
         (search_portfolio)                                    │
                     │                                         │
-            [Load PDF / RAG]                                   │
+            [Load PDF / RAG]                                  │
                     │                                         │
                     └────────────────────┬────────────────────┘
                                          ▼
